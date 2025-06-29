@@ -324,12 +324,12 @@ export default function ChatPage({
     setTranscript,
   } = useSpeechToText()
 
-  // Update currentMessage when transcript changes (only if recording)
+  // Update currentMessage when transcript changes (only if recording and not assistant typing)
   useEffect(() => {
-    if (isRecording) {
+    if (isRecording && !isAssistantTyping) {
       onMessageChange(transcript)
     }
-  }, [transcript, isRecording, onMessageChange])
+  }, [transcript, isRecording, isAssistantTyping, onMessageChange])
 
   // Optionally clear transcript when message is sent
   useEffect(() => {
@@ -338,15 +338,15 @@ export default function ChatPage({
     }
   }, [currentMessage, isRecording, setTranscript])
 
-  // When recording ends and transcript is available, set it as the message and focus input
+  // When recording ends and transcript is available, set it as the message and focus input (only if not assistant typing)
   useEffect(() => {
-    if (!isRecording && transcript) {
+    if (!isRecording && transcript && !isAssistantTyping) {
       onMessageChange(transcript)
       if (inputRef.current) {
         inputRef.current.focus()
       }
     }
-  }, [isRecording, transcript, onMessageChange])
+  }, [isRecording, transcript, isAssistantTyping, onMessageChange])
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -760,23 +760,35 @@ export default function ChatPage({
             <div className="flex items-center space-x-3">
               <input
                 ref={inputRef}
-                className="flex-1 h-12 bg-zinc-800 border-none rounded-lg px-4 text-white placeholder-zinc-400 outline-none"
-                placeholder="Ask questions, or type '/' for commands"
+                className={`flex-1 h-12 bg-zinc-800 border-none rounded-lg px-4 text-white placeholder-zinc-400 outline-none ${
+                  isAssistantTyping ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
+                placeholder={isAssistantTyping ? "Assistant is typing..." : "Ask questions, or type '/' for commands"}
                 value={currentMessage}
                 onChange={e => onMessageChange(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter') onSendMessage() }}
+                onKeyDown={e => { if (e.key === 'Enter' && !isAssistantTyping) onSendMessage() }}
+                disabled={isAssistantTyping}
               />
               <Button
                 size="icon"
-                className={`bg-zinc-800 rounded-lg p-0 w-12 h-12 flex items-center justify-center text-white ${isRecording ? 'animate-pulse bg-blue-700' : ''}`}
+                className={`bg-zinc-800 rounded-lg p-0 w-12 h-12 flex items-center justify-center text-white ${
+                  isRecording ? 'animate-pulse bg-blue-700' : ''
+                } ${isAssistantTyping ? 'opacity-50 cursor-not-allowed' : ''}`}
                 onClick={isRecording ? stopListening : startListening}
                 type="button"
                 title={isRecording ? "Stop recording" : "Start voice input"}
-                disabled={!isSpeechSupported}
+                disabled={!isSpeechSupported || isAssistantTyping}
               >
                 <Mic className={`w-5 h-5 ${isRecording ? 'text-blue-400' : 'text-white'}`} />
               </Button>
-              <Button size="icon" className="bg-zinc-800 rounded-lg p-0 w-12 h-12 flex items-center justify-center text-white" onClick={onSendMessage}>
+              <Button 
+                size="icon" 
+                className={`bg-zinc-800 rounded-lg p-0 w-12 h-12 flex items-center justify-center text-white ${
+                  isAssistantTyping ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
+                onClick={onSendMessage}
+                disabled={isAssistantTyping || !currentMessage.trim()}
+              >
                 <Send className="w-5 h-5 text-white" />
               </Button>
             </div>
