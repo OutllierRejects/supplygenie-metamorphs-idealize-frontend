@@ -208,7 +208,7 @@ const ContactButton = ({ type, value }: ContactButtonProps) => {
     <Button 
       size="sm" 
       variant="ghost" 
-      className="p-1 h-7 w-7 text-zinc-400 hover:text-white hover:bg-zinc-700 transition-colors"
+      className="p-2 h-8 w-8 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 text-cyan-400 hover:text-white hover:from-cyan-500/30 hover:to-blue-500/30 hover:border-cyan-400/50 transition-all duration-200 rounded-lg backdrop-blur-sm"
       onClick={handleClick}
       title={getTitle()}
     >
@@ -224,12 +224,16 @@ const renderFieldValue = (field: SupplierField) => {
   switch (field.type) {
     case "badge":
       if (safeValue === "N/A") {
-        return <span className="text-sm text-zinc-400">N/A</span>
+        return <span className="text-xs md:text-sm text-zinc-400">N/A</span>
       }
       return (
         <div className="flex flex-wrap gap-1">
           {safeValue.split(",").map((item, index) => (
-            <Badge key={index} variant="secondary" className="text-xs bg-zinc-800 text-zinc-300 border-zinc-700">
+            <Badge 
+              key={index} 
+              variant="secondary" 
+              className="text-xs bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 text-blue-300 hover:from-blue-500/30 hover:to-purple-500/30 transition-all duration-200 px-1.5 md:px-2 py-0.5 md:py-1 break-words"
+            >
               {item.trim()}
             </Badge>
           ))}
@@ -237,32 +241,32 @@ const renderFieldValue = (field: SupplierField) => {
       )
     case "rating":
       if (safeValue === "N/A") {
-        return <span className="text-sm text-zinc-400">N/A</span>
+        return <span className="text-xs md:text-sm text-zinc-400">N/A</span>
       }
       return (
         <div className="flex items-center space-x-1">
-          <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
-          <span className="text-sm font-medium">{safeValue}</span>
+          <Star className="w-3 h-3 fill-yellow-500 text-yellow-500 flex-shrink-0" />
+          <span className="text-xs md:text-sm font-medium">{safeValue}</span>
         </div>
       )
     case "location":
       return (
-        <div className="flex items-center space-x-1">
-          <MapPin className="w-3 h-3 text-zinc-400" />
-          <span className="text-sm">{safeValue}</span>
+        <div className="flex items-center space-x-1 min-w-0">
+          <MapPin className="w-3 h-3 text-zinc-400 flex-shrink-0" />
+          <span className="text-xs md:text-sm truncate">{safeValue}</span>
         </div>
       )
     case "time":
       return (
-        <div className="flex items-center space-x-1">
-          <Clock className="w-3 h-3 text-zinc-400" />
-          <span className="text-sm">{safeValue}</span>
+        <div className="flex items-center space-x-1 min-w-0">
+          <Clock className="w-3 h-3 text-zinc-400 flex-shrink-0" />
+          <span className="text-xs md:text-sm truncate">{safeValue}</span>
         </div>
       )
     case "price":
-      return <span className="text-sm font-medium text-green-400">{safeValue}</span>
+      return <span className="text-xs md:text-sm font-medium text-green-400 break-words">{safeValue}</span>
     default:
-      return <span className="text-sm">{safeValue}</span>
+      return <span className="text-xs md:text-sm break-words">{safeValue}</span>
   }
 }
 
@@ -585,7 +589,8 @@ export default function ChatPage({
                 onChange={e => onSearchChange(e.target.value)}
               />
             </div>
-            <Button size="icon" className="bg-zinc-800 rounded-lg p-0 w-8 h-8 flex items-center justify-center text-white">
+            {/* Hamburger menu - only show on mobile */}
+            <Button size="icon" className="bg-zinc-800 rounded-lg p-0 w-8 h-8 flex items-center justify-center text-white md:hidden">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               </svg>
@@ -763,166 +768,223 @@ export default function ChatPage({
                       {message.suppliers && message.suppliers.length > 0 && (
                         <div className="mt-4 w-full max-w-full">
                           {/* Header */}
-                          <div className="flex items-center gap-3 mb-4 md:mb-6">
-                            <div className="p-2 bg-zinc-800 rounded-lg">
-                              <Building className="w-4 h-4 md:w-5 md:h-5 text-white" />
-                            </div>
-                            <div>
-                              <h3 className="text-lg md:text-xl font-semibold text-white">Top Supplier Matches</h3>
-                              <p className="text-xs md:text-sm text-zinc-400">Found {message.suppliers.length} suppliers matching your criteria</p>
+                          <div className="bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-cyan-500/10 border border-blue-500/20 rounded-xl p-3 md:p-4 mb-4 md:mb-6 backdrop-blur-sm">
+                            <div className="flex items-center gap-2 md:gap-3">
+                              <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg flex-shrink-0">
+                                <Building className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <h3 className="text-lg md:text-xl lg:text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent leading-tight">
+                                  Top Supplier Matches
+                                </h3>
+                                <p className="text-xs md:text-sm text-zinc-400 mt-1">
+                                  Found <span className="font-semibold text-blue-400">{message.suppliers.length}</span> suppliers matching your criteria
+                                </p>
+                              </div>
                             </div>
                           </div>
                           
                           {/* Supplier Cards Grid - Mobile responsive */}
-                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
+                          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3 md:gap-4 lg:gap-6">
                             {message.suppliers.map((supplier) => (
                               <Card
                                 key={supplier.id}
-                                className="bg-zinc-900 border-zinc-700 hover:border-zinc-600 transition-all duration-200 hover:shadow-lg"
+                                className="group bg-gradient-to-br from-zinc-900 via-zinc-900 to-zinc-800 border border-zinc-700/50 hover:border-blue-500/30 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-1 backdrop-blur-sm flex flex-col h-full"
                               >
-                                <CardHeader className="pb-2 md:pb-3">
-                                  <div className="flex items-start justify-between">
-                                    <div className="flex-1">
-                                      <CardTitle className="text-sm md:text-base font-semibold text-white mb-1 leading-tight">
-                                        {supplier.name}
-                                      </CardTitle>
-                                      {supplier.fields.find((f: SupplierField) => f.label === "Location") && (
-                                        <div className="flex items-center gap-1 text-xs md:text-sm text-zinc-400">
-                                          <MapPin className="w-3 h-3" />
-                                          <span className="truncate">{supplier.fields.find((f: SupplierField) => f.label === "Location")?.value}</span>
+                                <CardHeader className="pb-2 md:pb-3 relative flex-shrink-0">
+                                  {/* Background gradient accent */}
+                                  <div className="absolute top-0 right-0 w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-blue-500/10 to-transparent rounded-bl-3xl" />
+                                  
+                                  <div className="flex items-start justify-between relative z-10 gap-2">
+                                    <div className="flex-1 min-w-0 space-y-1 md:space-y-2">
+                                      <div className="flex items-start gap-2">
+                                        <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-lg">
+                                          <Building className="w-4 h-4 md:w-5 md:h-5 text-white" />
                                         </div>
-                                      )}
+                                        <div className="flex-1 min-w-0">
+                                          <CardTitle className="text-sm md:text-base lg:text-lg font-bold text-white mb-1 leading-tight group-hover:text-blue-100 transition-colors overflow-hidden"
+                                            style={{
+                                              display: '-webkit-box',
+                                              WebkitLineClamp: 2,
+                                              WebkitBoxOrient: 'vertical',
+                                              wordBreak: 'break-word'
+                                            }}
+                                          >
+                                            {supplier.name}
+                                          </CardTitle>
+                                          {supplier.fields.find((f: SupplierField) => f.label === "Location") && (
+                                            <div className="flex items-center gap-1 text-xs md:text-sm text-zinc-400">
+                                              <MapPin className="w-3 h-3 md:w-3.5 md:h-3.5 text-blue-400 flex-shrink-0" />
+                                              <span className="truncate text-xs md:text-sm">{supplier.fields.find((f: SupplierField) => f.label === "Location")?.value}</span>
+                                            </div>
+                                          )}
+                                        </div>
+                                      </div>
                                     </div>
                                     {supplier.fields.find((f: SupplierField) => f.label === "Rating") && (
-                                      <div className="flex items-center gap-1 bg-zinc-800 px-2 py-1 rounded-lg ml-2">
-                                        <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
-                                        <span className="text-xs md:text-sm font-medium text-white">
+                                      <div className="flex items-center gap-1 md:gap-1.5 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 px-2 md:px-3 py-1 md:py-1.5 rounded-full backdrop-blur-sm flex-shrink-0">
+                                        <Star className="w-3 h-3 md:w-3.5 md:h-3.5 fill-yellow-400 text-yellow-400" />
+                                        <span className="text-xs md:text-sm font-semibold text-yellow-300">
                                           {supplier.fields.find((f: SupplierField) => f.label === "Rating")?.value}
                                         </span>
                                       </div>
                                     )}
                                   </div>
                                 </CardHeader>
-                                <CardContent className="space-y-2 md:space-y-3 pt-0">
-                                  {/* Price Range */}
-                                  {supplier.fields.find((f: SupplierField) => f.label === "Price Range") && (
-                                    <div className="flex items-center justify-between">
-                                      <span className="text-xs md:text-sm text-zinc-400">Price Range</span>
-                                      <span className="text-xs md:text-sm font-medium text-green-400 truncate ml-2">
-                                        {supplier.fields.find((f: SupplierField) => f.label === "Price Range")?.value}
-                                      </span>
-                                    </div>
-                                  )}
-                                  
-                                  {/* Lead Time */}
-                                  {supplier.fields.find((f: SupplierField) => f.label === "Lead Time") && (
-                                    <div className="flex items-center justify-between">
-                                      <span className="text-xs md:text-sm text-zinc-400">Lead Time</span>
-                                      <div className="flex items-center gap-1">
-                                        <Clock className="w-3 h-3 text-zinc-400" />
-                                        <span className="text-xs md:text-sm text-white">
+                                <CardContent className="space-y-3 md:space-y-4 pt-0 flex-1 flex flex-col">
+                                  {/* Key Information Section */}
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-3">
+                                    {/* Price Range */}
+                                    {supplier.fields.find((f: SupplierField) => f.label === "Price Range") && (
+                                      <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-lg p-2 md:p-3 space-y-1 min-w-0">
+                                        <div className="flex items-center gap-1 md:gap-1.5 text-green-400">
+                                          <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-green-400 flex-shrink-0" />
+                                          <span className="text-xs font-medium uppercase tracking-wide">Price Range</span>
+                                        </div>
+                                        <p className="text-xs md:text-sm font-semibold text-green-300 break-words">
+                                          {supplier.fields.find((f: SupplierField) => f.label === "Price Range")?.value}
+                                        </p>
+                                      </div>
+                                    )}
+                                    
+                                    {/* MOQ */}
+                                    {supplier.fields.find((f: SupplierField) => f.label === "MOQ") && (
+                                      <div className="bg-gradient-to-br from-purple-500/10 to-indigo-500/10 border border-purple-500/20 rounded-lg p-2 md:p-3 space-y-1 min-w-0">
+                                        <div className="flex items-center gap-1 md:gap-1.5 text-purple-400">
+                                          <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-purple-400 flex-shrink-0" />
+                                          <span className="text-xs font-medium uppercase tracking-wide">MOQ</span>
+                                        </div>
+                                        <p className="text-xs md:text-sm font-semibold text-purple-300 break-words">
+                                          {supplier.fields.find((f: SupplierField) => f.label === "MOQ")?.value}
+                                        </p>
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  {/* Timing Information */}
+                                  <div className="space-y-2 md:space-y-3">
+                                    {/* Lead Time */}
+                                    {supplier.fields.find((f: SupplierField) => f.label === "Lead Time") && (
+                                      <div className="flex items-center justify-between p-2 rounded-lg bg-zinc-800/50 border border-zinc-700/50 gap-2 min-w-0">
+                                        <div className="flex items-center gap-1 md:gap-2 text-zinc-400 min-w-0">
+                                          <Clock className="w-3 h-3 md:w-4 md:h-4 text-blue-400 flex-shrink-0" />
+                                          <span className="text-xs md:text-sm font-medium truncate">Lead Time</span>
+                                        </div>
+                                        <span className="text-xs md:text-sm font-semibold text-blue-300 flex-shrink-0">
                                           {supplier.fields.find((f: SupplierField) => f.label === "Lead Time")?.value}
                                         </span>
                                       </div>
-                                    </div>
-                                  )}
-                                  
-                                  {/* Response Time */}
-                                  {supplier.fields.find((f: SupplierField) => f.label === "Response Time") && (
-                                    <div className="flex items-center justify-between">
-                                      <span className="text-xs md:text-sm text-zinc-400">Response Time</span>
-                                      <div className="flex items-center gap-1">
-                                        <Clock className="w-3 h-3 text-zinc-400" />
-                                        <span className="text-xs md:text-sm text-white">
+                                    )}
+                                    
+                                    {/* Response Time */}
+                                    {supplier.fields.find((f: SupplierField) => f.label === "Response Time") && (
+                                      <div className="flex items-center justify-between p-2 rounded-lg bg-zinc-800/50 border border-zinc-700/50 gap-2 min-w-0">
+                                        <div className="flex items-center gap-1 md:gap-2 text-zinc-400 min-w-0">
+                                          <Clock className="w-3 h-3 md:w-4 md:h-4 text-cyan-400 flex-shrink-0" />
+                                          <span className="text-xs md:text-sm font-medium truncate">Response Time</span>
+                                        </div>
+                                        <span className="text-xs md:text-sm font-semibold text-cyan-300 flex-shrink-0">
                                           {supplier.fields.find((f: SupplierField) => f.label === "Response Time")?.value}
                                         </span>
                                       </div>
-                                    </div>
-                                  )}
-                                  
-                                  {/* MOQ (Minimum Order Quantity) */}
-                                  {supplier.fields.find((f: SupplierField) => f.label === "MOQ") && (
-                                    <div className="flex items-center justify-between">
-                                      <span className="text-xs md:text-sm text-zinc-400">MOQ</span>
-                                      <span className="text-xs md:text-sm font-medium text-white truncate ml-2">
-                                        {supplier.fields.find((f: SupplierField) => f.label === "MOQ")?.value}
-                                      </span>
-                                    </div>
-                                  )}
-                                  
-                                  {/* Stock */}
-                                  {supplier.fields.find((f: SupplierField) => f.label === "Stock") && 
-                                   supplier.fields.find((f: SupplierField) => f.label === "Stock")?.value !== "N/A" && (
-                                    <div className="flex items-center justify-between">
-                                      <span className="text-xs md:text-sm text-zinc-400">Stock</span>
-                                      <span className="text-xs md:text-sm font-medium text-white truncate ml-2">
-                                        {supplier.fields.find((f: SupplierField) => f.label === "Stock")?.value}
-                                      </span>
-                                    </div>
-                                  )}
-                                  
-                                  {/* Time Zone */}
-                                  {supplier.fields.find((f: SupplierField) => f.label === "Time Zone") && 
-                                   supplier.fields.find((f: SupplierField) => f.label === "Time Zone")?.value !== "N/A" && (
-                                    <div className="flex items-center justify-between">
-                                      <span className="text-xs md:text-sm text-zinc-400">Time Zone</span>
-                                      <span className="text-xs md:text-sm font-medium text-white truncate ml-2">
-                                        {supplier.fields.find((f: SupplierField) => f.label === "Time Zone")?.value}
-                                      </span>
-                                    </div>
-                                  )}
-                                  
-                                  {/* Certifications */}
-                                  {supplier.fields.find((f: SupplierField) => f.label === "Certifications") && 
-                                   supplier.fields.find((f: SupplierField) => f.label === "Certifications")?.value !== "N/A" && (
-                                    <div className="space-y-1">
-                                      <span className="text-xs md:text-sm text-zinc-400">Certifications</span>
-                                      <div className="pl-0">
-                                        {renderFieldValue(supplier.fields.find((f: SupplierField) => f.label === "Certifications")!)}
+                                    )}
+                                  </div>
+
+                                  {/* Additional Information */}
+                                  <div className="space-y-2 md:space-y-3">
+                                    {/* Stock */}
+                                    {supplier.fields.find((f: SupplierField) => f.label === "Stock") && 
+                                     supplier.fields.find((f: SupplierField) => f.label === "Stock")?.value !== "N/A" && (
+                                      <div className="flex items-center justify-between p-2 rounded-lg bg-zinc-800/30 gap-2 min-w-0">
+                                        <span className="text-xs md:text-sm text-zinc-400 truncate">Stock Level</span>
+                                        <span className="text-xs md:text-sm font-medium text-zinc-200 flex-shrink-0">
+                                          {supplier.fields.find((f: SupplierField) => f.label === "Stock")?.value}
+                                        </span>
                                       </div>
-                                    </div>
-                                  )}
-                                  
-                                  {/* Specialties */}
-                                  {supplier.fields.find((f: SupplierField) => f.label === "Specialties") && 
-                                   supplier.fields.find((f: SupplierField) => f.label === "Specialties")?.value !== "N/A" && (
-                                    <div className="space-y-1">
-                                      <span className="text-xs md:text-sm text-zinc-400">Specialties</span>
-                                      <div className="pl-0">
-                                        {renderFieldValue(supplier.fields.find((f: SupplierField) => f.label === "Specialties")!)}
+                                    )}
+                                    
+                                    {/* Time Zone */}
+                                    {supplier.fields.find((f: SupplierField) => f.label === "Time Zone") && 
+                                     supplier.fields.find((f: SupplierField) => f.label === "Time Zone")?.value !== "N/A" && (
+                                      <div className="flex items-center justify-between p-2 rounded-lg bg-zinc-800/30 gap-2 min-w-0">
+                                        <span className="text-xs md:text-sm text-zinc-400 truncate">Time Zone</span>
+                                        <span className="text-xs md:text-sm font-medium text-zinc-200 flex-shrink-0">
+                                          {supplier.fields.find((f: SupplierField) => f.label === "Time Zone")?.value}
+                                        </span>
                                       </div>
-                                    </div>
-                                  )}
+                                    )}
+                                  </div>
+                                  
+                                  {/* Certifications & Specialties */}
+                                  <div className="space-y-2 md:space-y-3">
+                                    {/* Certifications */}
+                                    {supplier.fields.find((f: SupplierField) => f.label === "Certifications") && 
+                                     supplier.fields.find((f: SupplierField) => f.label === "Certifications")?.value !== "N/A" && (
+                                      <div className="space-y-1 md:space-y-2">
+                                        <div className="flex items-center gap-1 md:gap-2">
+                                          <div className="w-1 h-1 md:w-1.5 md:h-1.5 rounded-full bg-blue-400 flex-shrink-0" />
+                                          <span className="text-xs md:text-sm font-medium text-blue-400">Certifications</span>
+                                        </div>
+                                        <div className="pl-2 md:pl-3">
+                                          {renderFieldValue(supplier.fields.find((f: SupplierField) => f.label === "Certifications")!)}
+                                        </div>
+                                      </div>
+                                    )}
+                                    
+                                    {/* Specialties */}
+                                    {supplier.fields.find((f: SupplierField) => f.label === "Specialties") && 
+                                     supplier.fields.find((f: SupplierField) => f.label === "Specialties")?.value !== "N/A" && (
+                                      <div className="space-y-1 md:space-y-2">
+                                        <div className="flex items-center gap-1 md:gap-2">
+                                          <div className="w-1 h-1 md:w-1.5 md:h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />
+                                          <span className="text-xs md:text-sm font-medium text-emerald-400">Specialties</span>
+                                        </div>
+                                        <div className="pl-2 md:pl-3">
+                                          {renderFieldValue(supplier.fields.find((f: SupplierField) => f.label === "Specialties")!)}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
                                   
                                   {/* Other Fields */}
-                                  {supplier.fields
-                                    .filter((f: SupplierField) => !["Location", "Rating", "Price Range", "Lead Time", "Response Time", "MOQ", "Stock", "Time Zone", "Certifications", "Specialties", "Email", "Phone", "Website"].includes(f.label))
-                                    .map((field: SupplierField, index: number) => (
-                                      <div key={index} className="space-y-1">
-                                        <div className="flex items-center justify-between">
-                                          <span className="text-xs md:text-sm font-medium text-zinc-300">{field.label}:</span>
-                                        </div>
-                                        <div className="pl-0">
-                                          {renderFieldValue(field)}
-                                        </div>
-                                      </div>
-                                    ))}
-                                  
-                                  {/* Contact Information - displayed last */}
-                                  {supplier.fields.find((f: SupplierField) => f.label === "Website") && (
-                                    <div className="flex items-center justify-between pt-2 border-t border-zinc-800">
-                                      <span className="text-xs text-zinc-400">Contact:</span>
-                                      <div className="flex items-center gap-1">
-                                        {/* Website - show only icon */}
+                                  <div className="flex-1">
+                                    {supplier.fields
+                                      .filter((f: SupplierField) => !["Location", "Rating", "Price Range", "Lead Time", "Response Time", "MOQ", "Stock", "Time Zone", "Certifications", "Specialties", "Email", "Phone", "Website"].includes(f.label))
+                                      .length > 0 && (
+                                      <div className="space-y-2 pt-2 border-t border-zinc-800/50">
                                         {supplier.fields
-                                          .filter((f: SupplierField) => f.label === "Website")
+                                          .filter((f: SupplierField) => !["Location", "Rating", "Price Range", "Lead Time", "Response Time", "MOQ", "Stock", "Time Zone", "Certifications", "Specialties", "Email", "Phone", "Website"].includes(f.label))
                                           .map((field: SupplierField, index: number) => (
-                                            <ContactButton 
-                                              key={index}
-                                              type="website" 
-                                              value={typeof field.value === 'string' ? field.value : ''} 
-                                            />
+                                            <div key={index} className="flex items-center justify-between p-2 rounded-lg bg-zinc-800/30 gap-2 min-w-0">
+                                              <span className="text-xs md:text-sm text-zinc-400 truncate">{field.label}</span>
+                                              <div className="text-right flex-shrink-0">
+                                                {renderFieldValue(field)}
+                                              </div>
+                                            </div>
                                           ))}
+                                      </div>
+                                    )}
+                                  </div>
+                                  
+                                  {/* Contact Information - Always at the bottom */}
+                                  {supplier.fields.find((f: SupplierField) => f.label === "Website") && (
+                                    <div className="pt-3 md:pt-4 mt-auto border-t border-zinc-700/50">
+                                      <div className="flex items-center justify-between gap-2">
+                                        <div className="flex items-center gap-1 md:gap-2 min-w-0">
+                                          <Globe className="w-3 h-3 md:w-4 md:h-4 text-cyan-400 flex-shrink-0" />
+                                          <span className="text-xs md:text-sm font-medium text-cyan-400">Contact</span>
+                                        </div>
+                                        <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
+                                          {supplier.fields
+                                            .filter((f: SupplierField) => f.label === "Website")
+                                            .map((field: SupplierField, index: number) => (
+                                              <ContactButton 
+                                                key={index}
+                                                type="website" 
+                                                value={typeof field.value === 'string' ? field.value : ''} 
+                                              />
+                                            ))}
+                                        </div>
                                       </div>
                                     </div>
                                   )}
@@ -1003,7 +1065,7 @@ export default function ChatPage({
                 className={`flex-1 h-10 md:h-12 bg-zinc-800 border-none rounded-lg px-3 md:px-4 text-sm md:text-base text-white placeholder-zinc-400 outline-none ${
                   isAssistantTyping ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
-                placeholder={isAssistantTyping ? "Assistant is typing..." : "Ask questions, or type '/' for commands"}
+                placeholder={isAssistantTyping ? "Assistant is typing..." : "Ask questions"}
                 value={currentMessage}
                 onChange={e => onMessageChange(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter' && !isAssistantTyping) onSendMessage() }}
