@@ -34,7 +34,7 @@ interface LandingPageProps {
 
 // Reusable style constants
 const STYLE_CONSTANTS = {
-  avatarBase: "w-10 h-10 bg-zinc-800 border border-zinc-700",
+  avatarBase: "w-8 h-8 md:w-10 md:h-10 bg-zinc-800 border border-zinc-700",
   dropdownBase: "bg-zinc-900 border-zinc-800",
 }
 
@@ -94,11 +94,11 @@ export default function LandingPage({ user, onViewChange, onLogout, isAnimating 
     >
       {/* Header */}
       <header className="border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
           <div className="flex items-center">
-            <LogoImage className="h-10 w-auto" />
+            <LogoImage className="h-8 md:h-10 w-auto" />
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 md:space-x-4">
             {user ? (
               <UserAvatarDropdown user={user} onLogout={onLogout} />
             ) : (
@@ -106,11 +106,11 @@ export default function LandingPage({ user, onViewChange, onLogout, isAnimating 
                 <Button
                   variant="ghost"
                   onClick={() => onViewChange("login")}
-                  className="text-zinc-300 hover:text-white"
+                  className="text-zinc-300 hover:text-white text-sm md:text-base"
                 >
                   Sign In
                 </Button>
-                <Button onClick={() => onViewChange("signup")} className="bg-white text-black hover:bg-zinc-200">
+                <Button onClick={() => onViewChange("signup")} className="bg-white text-black hover:bg-zinc-200 text-sm md:text-base">
                   Get Started
                 </Button>
               </>
@@ -120,14 +120,14 @@ export default function LandingPage({ user, onViewChange, onLogout, isAnimating 
       </header>
 
       {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-6 py-20">
-        <div className="flex flex-col md:flex-row items-center gap-12 md:gap-20">
-          <div className="flex-1 space-y-8 text-center md:text-left">
+      <section className="max-w-7xl mx-auto px-4 md:px-6 py-12 md:py-20">
+        <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12 lg:gap-20">
+          <div className="flex-1 space-y-6 md:space-y-8 text-center md:text-left">
             <div className="space-y-4">
-              <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent">
                 Find Perfect Suppliers
               </h1>
-              <p className="text-xl text-zinc-400 max-w-2xl leading-relaxed mx-auto md:mx-0">
+              <p className="text-lg md:text-xl text-zinc-400 max-w-2xl leading-relaxed mx-auto md:mx-0">
                 AI-powered supply chain advisor that helps you discover, evaluate, and connect with suppliers based on your exact requirements.
               </p>
             </div>
@@ -135,36 +135,36 @@ export default function LandingPage({ user, onViewChange, onLogout, isAnimating 
               <Button
                 size="lg"
                 onClick={() => onViewChange(user ? "chat" : "signup")}
-                className="bg-white text-black hover:bg-zinc-200 h-12 px-8"
+                className="bg-white text-black hover:bg-zinc-200 h-12 px-6 md:px-8"
               >
                 Get Started
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </div>
           </div>
-          <div className="flex-1 flex justify-center md:justify-end mt-12 md:mt-0">
-            <img src="/home_page_image.png" alt="SupplyGenie Home" className="max-w-sm md:max-w-xl w-full rounded-2xl shadow-2xl" />
+          <div className="flex-1 flex justify-center md:justify-end mt-8 md:mt-0">
+            <img src="/home_page_image.png" alt="SupplyGenie Home" className="max-w-xs md:max-w-sm lg:max-w-xl w-full rounded-2xl shadow-2xl" />
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="max-w-7xl mx-auto px-6 py-20">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold mb-4">Why Choose SupplyGenie?</h2>
-          <p className="text-zinc-400 text-lg">
+      <section className="max-w-7xl mx-auto px-4 md:px-6 py-12 md:py-20">
+        <div className="text-center mb-12 md:mb-16">
+          <h2 className="text-2xl md:text-3xl font-bold mb-4">Why Choose SupplyGenie?</h2>
+          <p className="text-zinc-400 text-base md:text-lg">
             Streamline your supplier discovery process with intelligent automation
           </p>
         </div>
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
           {features.map((feature, index) => (
             <Card key={index} className="bg-zinc-900 border-zinc-800 hover:border-zinc-700 transition-colors">
-              <CardContent className="p-6 text-center space-y-4">
-                <div className="w-12 h-12 bg-zinc-800 rounded-lg flex items-center justify-center mx-auto text-white">
+              <CardContent className="p-4 md:p-6 text-center space-y-4">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-zinc-800 rounded-lg flex items-center justify-center mx-auto text-white">
                   {feature.icon}
                 </div>
-                <h3 className="text-xl font-semibold text-white">{feature.title}</h3>
-                <p className="text-zinc-400">{feature.description}</p>
+                <h3 className="text-lg md:text-xl font-semibold text-white">{feature.title}</h3>
+                <p className="text-sm md:text-base text-zinc-400">{feature.description}</p>
               </CardContent>
             </Card>
           ))}
@@ -172,17 +172,17 @@ export default function LandingPage({ user, onViewChange, onLogout, isAnimating 
       </section>
 
       {/* CTA Section */}
-      <section className="max-w-7xl mx-auto px-6 py-20">
+      <section className="max-w-7xl mx-auto px-4 md:px-6 py-12 md:py-20">
         <Card className="bg-zinc-900 border-zinc-800">
-          <CardContent className="p-12 text-center space-y-6">
-            <h2 className="text-3xl font-bold text-white">Ready to Transform Your Supply Chain?</h2>
-            <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
+          <CardContent className="p-6 md:p-12 text-center space-y-4 md:space-y-6">
+            <h2 className="text-2xl md:text-3xl font-bold text-white">Ready to Transform Your Supply Chain?</h2>
+            <p className="text-zinc-400 text-base md:text-lg max-w-2xl mx-auto">
               Join thousands of businesses already using SupplyGenie to find reliable suppliers faster than ever.
             </p>
             <Button
               size="lg"
               onClick={() => onViewChange(user ? "chat" : "signup")}
-              className="bg-white text-black hover:bg-zinc-200 h-12 px-8"
+              className="bg-white text-black hover:bg-zinc-200 h-12 px-6 md:px-8"
             >
               Get Started Free
               <ArrowRight className="w-4 h-4 ml-2" />

@@ -16,7 +16,6 @@ interface UserType {
 export default function Home() {
   const router = useRouter()
   const [user, setUser] = useState<UserType | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
   const [isAnimating, setIsAnimating] = useState(false)
 
   const handleViewChange = (newView: "landing" | "login" | "signup" | "chat") => {
@@ -45,18 +44,9 @@ export default function Home() {
       } else {
         setUser(null)
       }
-      setIsLoading(false)
     })
     return () => unsubscribe()
   }, [])
-
-  // Show loading while checking authentication
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-zinc-950 animate-pulse">
-      </div>
-    )
-  }
 
   return (
     <LandingPage

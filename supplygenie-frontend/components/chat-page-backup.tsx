@@ -26,7 +26,6 @@ import {
   LogOut,
   Menu,
   X,
-  Trash2,
 } from "lucide-react"
 import { useSpeechToText } from "@/hooks/useSpeechToText"
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -86,7 +85,6 @@ interface ChatPageProps {
   onRenameSave: (chatId: string) => void
   onRenameKeyDown: (e: React.KeyboardEvent<HTMLInputElement>, chatId: string) => void
   setRenamingChatId: (id: string | null) => void
-  onDeleteChat: (chatId: string) => void
 }
 
 // Reusable style constants
@@ -104,6 +102,56 @@ const TypingIndicator = () => (
       <div className="w-2 h-2 bg-zinc-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
     </div>
   </div>
+)
+
+// Logo Image component
+const LogoImage = ({ className }: { className?: string }) => (
+  <svg
+    className={className}
+    viewBox="0 0 32 32"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    {/* Outer circle with gradient */}
+    <circle
+      cx="16"
+      cy="16"
+      r="14"
+      fill="url(#gradient1)"
+      stroke="url(#gradient2)"
+      strokeWidth="2"
+    />
+    
+    {/* Inner geometric pattern */}
+    <path
+      d="M12 10L20 10L18 14L16 12L14 14L12 10Z"
+      fill="white"
+      opacity="0.9"
+    />
+    <path
+      d="M10 16L14 12L16 14L18 12L22 16L20 20L16 18L12 20L10 16Z"
+      fill="white"
+      opacity="0.7"
+    />
+    <circle
+      cx="16"
+      cy="16"
+      r="3"
+      fill="white"
+    />
+    
+    {/* Gradient definitions */}
+    <defs>
+      <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style={{ stopColor: "#3B82F6", stopOpacity: 1 }} />
+        <stop offset="100%" style={{ stopColor: "#1D4ED8", stopOpacity: 1 }} />
+      </linearGradient>
+      <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style={{ stopColor: "#60A5FA", stopOpacity: 1 }} />
+        <stop offset="100%" style={{ stopColor: "#2563EB", stopOpacity: 1 }} />
+      </linearGradient>
+    </defs>
+  </svg>
 )
 
 // User Avatar Dropdown component
@@ -208,27 +256,24 @@ const ContactButton = ({ type, value }: ContactButtonProps) => {
     <Button 
       size="sm" 
       variant="ghost" 
-      className="p-1 h-7 w-7 text-zinc-400 hover:text-white hover:bg-zinc-700 transition-colors"
+      className="p-1 h-6 w-6 text-zinc-400 hover:text-white"
       onClick={handleClick}
       title={getTitle()}
     >
-      <Icon className="w-4 h-4" />
+      <Icon className="w-3 h-3" />
     </Button>
   )
 }
 
 const renderFieldValue = (field: SupplierField) => {
-  // Ensure the value is always a string
-  const safeValue = typeof field.value === 'string' ? field.value : JSON.stringify(field.value);
-  
   switch (field.type) {
     case "badge":
-      if (safeValue === "N/A") {
+      if (field.value === "N/A") {
         return <span className="text-sm text-zinc-400">N/A</span>
       }
       return (
         <div className="flex flex-wrap gap-1">
-          {safeValue.split(",").map((item, index) => (
+          {field.value.split(",").map((item, index) => (
             <Badge key={index} variant="secondary" className="text-xs bg-zinc-800 text-zinc-300 border-zinc-700">
               {item.trim()}
             </Badge>
@@ -236,33 +281,33 @@ const renderFieldValue = (field: SupplierField) => {
         </div>
       )
     case "rating":
-      if (safeValue === "N/A") {
+      if (field.value === "N/A") {
         return <span className="text-sm text-zinc-400">N/A</span>
       }
       return (
         <div className="flex items-center space-x-1">
           <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
-          <span className="text-sm font-medium">{safeValue}</span>
+          <span className="text-sm font-medium">{field.value}</span>
         </div>
       )
     case "location":
       return (
         <div className="flex items-center space-x-1">
           <MapPin className="w-3 h-3 text-zinc-400" />
-          <span className="text-sm">{safeValue}</span>
+          <span className="text-sm">{field.value}</span>
         </div>
       )
     case "time":
       return (
         <div className="flex items-center space-x-1">
           <Clock className="w-3 h-3 text-zinc-400" />
-          <span className="text-sm">{safeValue}</span>
+          <span className="text-sm">{field.value}</span>
         </div>
       )
     case "price":
-      return <span className="text-sm font-medium text-green-400">{safeValue}</span>
+      return <span className="text-sm font-medium text-green-400">{field.value}</span>
     default:
-      return <span className="text-sm">{safeValue}</span>
+      return <span className="text-sm">{field.value}</span>
   }
 }
 
@@ -288,15 +333,9 @@ export default function ChatPage({
   onRenameSave,
   onRenameKeyDown,
   setRenamingChatId,
-  onDeleteChat,
 }: ChatPageProps) {
   const isMobile = useIsMobile()
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [swipedChatId, setSwipedChatId] = useState<string | null>(null)
-  const [swipeStartX, setSwipeStartX] = useState(0)
-  const [swipeDistance, setSwipeDistance] = useState(0)
-  const [contextMenuChat, setContextMenuChat] = useState<string | null>(null)
-  const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 })
   const renameInputRef = useRef<HTMLInputElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -358,70 +397,6 @@ export default function ChatPage({
     }
   }
 
-  // Swipe handlers for chat deletion
-  const handleTouchStart = (e: React.TouchEvent, chatId: string) => {
-    if (renamingChatId) return // Don't allow swipe during rename
-    setSwipeStartX(e.touches[0].clientX)
-    setSwipedChatId(chatId)
-    setSwipeDistance(0)
-  }
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!swipedChatId || renamingChatId) return
-    const currentX = e.touches[0].clientX
-    const distance = swipeStartX - currentX
-    
-    // Only allow left swipe (positive distance)
-    if (distance > 0) {
-      setSwipeDistance(Math.min(distance, 80)) // Max swipe distance of 80px
-    } else {
-      setSwipeDistance(0)
-    }
-  }
-
-  const handleTouchEnd = () => {
-    if (!swipedChatId || renamingChatId) return
-    
-    // If swipe distance is less than 40px, reset
-    if (swipeDistance < 40) {
-      setSwipeDistance(0)
-      setSwipedChatId(null)
-    }
-    // If swipe distance is more than 40px, keep it swiped
-  }
-
-  const handleDeleteChat = (chatId: string, e: React.MouseEvent) => {
-    e.stopPropagation()
-    onDeleteChat(chatId)
-    setSwipedChatId(null)
-    setSwipeDistance(0)
-  }
-
-  const resetSwipe = () => {
-    setSwipedChatId(null)
-    setSwipeDistance(0)
-  }
-
-  // Handle right-click context menu for desktop
-  const handleContextMenu = (e: React.MouseEvent, chatId: string) => {
-    if (!isMobile) {
-      e.preventDefault()
-      setContextMenuChat(chatId)
-      
-      // Calculate position to ensure menu doesn't go off-screen
-      const menuWidth = 120
-      const menuHeight = 40
-      const x = e.clientX + menuWidth > window.innerWidth 
-        ? e.clientX - menuWidth 
-        : e.clientX
-      const y = e.clientY + menuHeight > window.innerHeight 
-        ? e.clientY - menuHeight 
-        : e.clientY
-        
-      setContextMenuPosition({ x, y })
-    }
-  }
-
   // Close sidebar when clicking outside on mobile
   useEffect(() => {
     if (isMobile && sidebarOpen) {
@@ -430,48 +405,6 @@ export default function ChatPage({
       return () => document.removeEventListener('click', handleOutsideClick)
     }
   }, [isMobile, sidebarOpen])
-
-  // Reset swipe when renaming starts
-  useEffect(() => {
-    if (renamingChatId) {
-      resetSwipe()
-    }
-  }, [renamingChatId])
-
-  // Reset swipe when search changes
-  useEffect(() => {
-    resetSwipe()
-  }, [search])
-
-  // Add keyboard event listeners
-  useEffect(() => {
-    const handleKeyDownWrapper = (e: KeyboardEvent) => {
-      if (activeChat && (e.key === 'Delete' || e.key === 'Backspace') && !renamingChatId) {
-        // Only delete if we're not editing a chat name and there's an active chat
-        const target = e.target as HTMLElement
-        if (target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA') {
-          e.preventDefault()
-          onDeleteChat(activeChat)
-        }
-      }
-      if (e.key === 'Escape') {
-        setContextMenuChat(null)
-      }
-    }
-
-    const handleClickOutsideWrapper = (e: MouseEvent) => {
-      if (contextMenuChat) {
-        setContextMenuChat(null)
-      }
-    }
-
-    document.addEventListener('keydown', handleKeyDownWrapper)
-    document.addEventListener('click', handleClickOutsideWrapper)
-    return () => {
-      document.removeEventListener('keydown', handleKeyDownWrapper)
-      document.removeEventListener('click', handleClickOutsideWrapper)
-    }
-  }, [activeChat, renamingChatId, contextMenuChat, onDeleteChat])
 
   return (
     <div className="flex flex-col h-screen bg-zinc-950 text-white">
@@ -494,11 +427,7 @@ export default function ChatPage({
             aria-label="Go to home page"
             type="button"
           >
-            <img 
-              src="/logo.png" 
-              alt="SupplyGenie Logo" 
-              className="h-6 md:h-8 w-auto cursor-pointer"
-            />
+            <LogoImage className="h-6 md:h-8 w-auto cursor-pointer" />
           </button>
         </div>
         <div className="flex items-center space-x-2 md:space-x-4">
@@ -597,91 +526,45 @@ export default function ChatPage({
             {filteredChats.map((chat) => (
               <div
                 key={chat.id}
-                className="mb-2 relative overflow-hidden rounded-xl"
-                onTouchStart={(e) => handleTouchStart(e, chat.id)}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleTouchEnd}
+                className={`mb-2 rounded-xl px-3 py-3 cursor-pointer transition-colors ${
+                  activeChat === chat.id ? "bg-zinc-800" : "hover:bg-zinc-800/70"
+                }`}
+                onClick={() => handleMobileChatSelect(chat.id)}
               >
-                {/* Delete button background */}
-                <div 
-                  className="absolute right-0 top-0 bottom-0 bg-red-500 flex items-center justify-center transition-all duration-200 ease-out"
-                  style={{ 
-                    width: swipedChatId === chat.id ? '80px' : '0px',
-                    opacity: swipedChatId === chat.id ? 1 : 0
-                  }}
-                >
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="text-white hover:bg-red-600 h-8 w-8"
-                    onClick={(e) => handleDeleteChat(chat.id, e)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-
-                {/* Chat content */}
-                <div
-                  className={`rounded-xl px-3 py-3 cursor-pointer transition-all duration-200 ease-out ${
-                    activeChat === chat.id ? "bg-zinc-800" : "hover:bg-zinc-800/70"
-                  }`}
-                  style={{
-                    transform: swipedChatId === chat.id ? `translateX(-${swipeDistance}px)` : 'translateX(0)',
-                  }}
-                  onClick={() => {
-                    if (swipedChatId === chat.id && swipeDistance > 0) {
-                      resetSwipe()
-                    } else {
-                      handleMobileChatSelect(chat.id)
-                    }
-                  }}
-                  onContextMenu={(e) => handleContextMenu(e, chat.id)}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      {renamingChatId === chat.id ? (
-                        <input
-                          ref={renameInputRef}
-                          value={renameValue}
-                          onChange={(e) => onRenameChange(e.target.value)}
-                          onBlur={() => onRenameSave(chat.id)}
-                          onKeyDown={e => onRenameKeyDown(e, chat.id)}
-                          className="font-medium text-sm truncate text-white bg-zinc-800 border border-zinc-700 rounded px-2 py-1 w-32 outline-none"
-                          autoFocus
-                          onClick={e => e.stopPropagation()}
-                        />
-                      ) : (
-                        <div className="flex items-center group/chat-title">
-                          <span
-                            className="font-medium text-sm truncate text-white group-hover:text-white cursor-pointer"
-                            onClick={e => { 
-                              e.stopPropagation(); 
-                              if (swipedChatId !== chat.id || swipeDistance === 0) {
-                                onStartRename(chat);
-                              }
-                            }}
-                            title="Click to rename"
-                          >
-                            {chat.title}
-                          </span>
-                          <button
-                            className="ml-1 opacity-0 group-hover/chat-title:opacity-100 text-zinc-400 hover:text-white transition"
-                            onClick={e => { 
-                              e.stopPropagation(); 
-                              if (swipedChatId !== chat.id || swipeDistance === 0) {
-                                onStartRename(chat);
-                              }
-                            }}
-                            tabIndex={-1}
-                            title="Rename"
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M9 13h3l8-8a2.828 2.828 0 10-4-4l-8 8v3zm0 0v3h3" /></svg>
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                    <span className="text-xs text-zinc-400">{chat.messages.length} messages</span>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    {renamingChatId === chat.id ? (
+                      <input
+                        ref={renameInputRef}
+                        value={renameValue}
+                        onChange={(e) => onRenameChange(e.target.value)}
+                        onBlur={() => onRenameSave(chat.id)}
+                        onKeyDown={e => onRenameKeyDown(e, chat.id)}
+                        className="font-medium text-sm truncate text-white bg-zinc-800 border border-zinc-700 rounded px-2 py-1 w-32 outline-none"
+                        autoFocus
+                        onClick={e => e.stopPropagation()}
+                      />
+                    ) : (
+                      <div className="flex items-center group/chat-title">
+                        <span
+                          className="font-medium text-sm truncate text-white group-hover:text-white cursor-pointer"
+                          onClick={e => { e.stopPropagation(); onStartRename(chat); }}
+                          title="Click to rename"
+                        >
+                          {chat.title}
+                        </span>
+                        <button
+                          className="ml-1 opacity-0 group-hover/chat-title:opacity-100 text-zinc-400 hover:text-white transition"
+                          onClick={e => { e.stopPropagation(); onStartRename(chat); }}
+                          tabIndex={-1}
+                          title="Rename"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M9 13h3l8-8a2.828 2.828 0 10-4-4l-8 8v3zm0 0v3h3" /></svg>
+                        </button>
+                      </div>
+                    )}
                   </div>
+                  <span className="text-xs text-zinc-400">{chat.messages.length} messages</span>
                 </div>
               </div>
             ))}
@@ -840,63 +723,27 @@ export default function ChatPage({
                                     </div>
                                   )}
                                   
-                                  {/* MOQ (Minimum Order Quantity) */}
-                                  {supplier.fields.find((f: SupplierField) => f.label === "MOQ") && (
-                                    <div className="flex items-center justify-between">
-                                      <span className="text-xs md:text-sm text-zinc-400">MOQ</span>
-                                      <span className="text-xs md:text-sm font-medium text-white truncate ml-2">
-                                        {supplier.fields.find((f: SupplierField) => f.label === "MOQ")?.value}
-                                      </span>
-                                    </div>
-                                  )}
-                                  
-                                  {/* Stock */}
-                                  {supplier.fields.find((f: SupplierField) => f.label === "Stock") && 
-                                   supplier.fields.find((f: SupplierField) => f.label === "Stock")?.value !== "N/A" && (
-                                    <div className="flex items-center justify-between">
-                                      <span className="text-xs md:text-sm text-zinc-400">Stock</span>
-                                      <span className="text-xs md:text-sm font-medium text-white truncate ml-2">
-                                        {supplier.fields.find((f: SupplierField) => f.label === "Stock")?.value}
-                                      </span>
-                                    </div>
-                                  )}
-                                  
-                                  {/* Time Zone */}
-                                  {supplier.fields.find((f: SupplierField) => f.label === "Time Zone") && 
-                                   supplier.fields.find((f: SupplierField) => f.label === "Time Zone")?.value !== "N/A" && (
-                                    <div className="flex items-center justify-between">
-                                      <span className="text-xs md:text-sm text-zinc-400">Time Zone</span>
-                                      <span className="text-xs md:text-sm font-medium text-white truncate ml-2">
-                                        {supplier.fields.find((f: SupplierField) => f.label === "Time Zone")?.value}
-                                      </span>
-                                    </div>
-                                  )}
-                                  
-                                  {/* Certifications */}
-                                  {supplier.fields.find((f: SupplierField) => f.label === "Certifications") && 
-                                   supplier.fields.find((f: SupplierField) => f.label === "Certifications")?.value !== "N/A" && (
-                                    <div className="space-y-1">
-                                      <span className="text-xs md:text-sm text-zinc-400">Certifications</span>
-                                      <div className="pl-0">
-                                        {renderFieldValue(supplier.fields.find((f: SupplierField) => f.label === "Certifications")!)}
-                                      </div>
-                                    </div>
-                                  )}
-                                  
-                                  {/* Specialties */}
-                                  {supplier.fields.find((f: SupplierField) => f.label === "Specialties") && 
-                                   supplier.fields.find((f: SupplierField) => f.label === "Specialties")?.value !== "N/A" && (
-                                    <div className="space-y-1">
-                                      <span className="text-xs md:text-sm text-zinc-400">Specialties</span>
-                                      <div className="pl-0">
-                                        {renderFieldValue(supplier.fields.find((f: SupplierField) => f.label === "Specialties")!)}
-                                      </div>
-                                    </div>
-                                  )}
+                                  {/* Contact Information */}
+                                  <div className="grid grid-cols-1 gap-2 pt-2 border-t border-zinc-800">
+                                    {supplier.fields
+                                      .filter((f: SupplierField) => f.label === "Email" || f.label === "Phone" || f.label === "Website")
+                                      .map((field: SupplierField, index: number) => (
+                                        <div key={index} className="flex items-center justify-between text-xs">
+                                          <span className="text-zinc-400 capitalize">{field.label}:</span>
+                                          <div className="flex items-center gap-1">
+                                            <span className="text-white truncate max-w-20">{field.value}</span>
+                                            <ContactButton 
+                                              type={field.label.toLowerCase() as 'email' | 'phone' | 'website'} 
+                                              value={field.value} 
+                                            />
+                                          </div>
+                                        </div>
+                                      ))}
+                                  </div>
                                   
                                   {/* Other Fields */}
                                   {supplier.fields
-                                    .filter((f: SupplierField) => !["Location", "Rating", "Price Range", "Lead Time", "Response Time", "MOQ", "Stock", "Time Zone", "Certifications", "Specialties", "Email", "Phone", "Website"].includes(f.label))
+                                    .filter((f: SupplierField) => !["Location", "Rating", "Price Range", "Lead Time", "Response Time", "Email", "Phone", "Website"].includes(f.label))
                                     .map((field: SupplierField, index: number) => (
                                       <div key={index} className="space-y-1">
                                         <div className="flex items-center justify-between">
@@ -907,25 +754,6 @@ export default function ChatPage({
                                         </div>
                                       </div>
                                     ))}
-                                  
-                                  {/* Contact Information - displayed last */}
-                                  {supplier.fields.find((f: SupplierField) => f.label === "Website") && (
-                                    <div className="flex items-center justify-between pt-2 border-t border-zinc-800">
-                                      <span className="text-xs text-zinc-400">Contact:</span>
-                                      <div className="flex items-center gap-1">
-                                        {/* Website - show only icon */}
-                                        {supplier.fields
-                                          .filter((f: SupplierField) => f.label === "Website")
-                                          .map((field: SupplierField, index: number) => (
-                                            <ContactButton 
-                                              key={index}
-                                              type="website" 
-                                              value={typeof field.value === 'string' ? field.value : ''} 
-                                            />
-                                          ))}
-                                      </div>
-                                    </div>
-                                  )}
                                 </CardContent>
                               </Card>
                             ))}
@@ -1041,29 +869,6 @@ export default function ChatPage({
           </div>
         </main>
       </div>
-      
-      {/* Desktop Context Menu */}
-      {contextMenuChat && !isMobile && (
-        <div
-          className="fixed z-50 bg-zinc-800 border border-zinc-700 rounded-lg shadow-lg py-1 min-w-[120px]"
-          style={{
-            left: contextMenuPosition.x,
-            top: contextMenuPosition.y,
-          }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <button
-            className="w-full text-left px-3 py-2 text-sm text-white hover:bg-zinc-700 flex items-center space-x-2"
-            onClick={() => {
-              onDeleteChat(contextMenuChat)
-              setContextMenuChat(null)
-            }}
-          >
-            <Trash2 className="w-4 h-4 text-red-400" />
-            <span>Delete Chat</span>
-          </button>
-        </div>
-      )}
     </div>
   )
 }

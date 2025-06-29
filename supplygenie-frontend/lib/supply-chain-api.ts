@@ -15,7 +15,9 @@ export interface SupplierApiResponse {
   certifications?: string[];
   specialties?: string[];
   response_time?: string;
-  contact?: string;
+  stock?: string;
+  time_zone?: string;
+  contact?: string | { website?: string; phone?: string; email?: string } | any;
 }
 
 export interface SupplyChainApiResponse {
@@ -70,17 +72,60 @@ export function transformSupplierData(supplier: SupplierApiResponse, index: numb
     { label: "Lead Time", value: supplier.lead_time || "N/A", type: "time" as const },
     { label: "Response Time", value: supplier.response_time || "N/A", type: "time" as const },
     { label: "MOQ", value: supplier.moq || "N/A", type: "text" as const },
+    { label: "Stock", value: supplier.stock || "N/A", type: "text" as const },
+    { label: "Time Zone", value: supplier.time_zone || "N/A", type: "text" as const },
     { label: "Specialties", value: (supplier.specialties && supplier.specialties.length > 0) ? supplier.specialties.join(", ") : "N/A", type: "badge" as const },
-    { label: "Contact Details", value: supplier.contact || "N/A", type: "text" as const },
   ];
 
   // Only add certifications if they exist and are not empty
   if (supplier.certifications && supplier.certifications.length > 0) {
-    fields.splice(6, 0, { 
+    fields.splice(8, 0, { 
       label: "Certifications", 
       value: supplier.certifications.join(", "), 
       type: "badge" as const 
     });
+  }
+
+  // Parse contact information and add individual contact fields
+  if (supplier.contact && supplier.contact !== "N/A") {
+    let email = "contact@example.com";
+    let phone = "+1-555-0123";
+    let website = "www.example.com";
+
+    // Handle contact as object or string
+    if (typeof supplier.contact === 'object' && supplier.contact !== null) {
+      // If contact is an object, extract the values directly
+      email = supplier.contact.email || email;
+      phone = supplier.contact.phone || phone;
+      website = supplier.contact.website || website;
+    } else if (typeof supplier.contact === 'string') {
+      // If contact is a string, try to parse it
+      const emailMatch = supplier.contact.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
+      const phoneMatch = supplier.contact.match(/(\+?[\d\s\-\(\)]{10,})/);
+      const websiteMatch = supplier.contact.match(/(https?:\/\/[^\s]+|www\.[^\s]+|[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:\/[^\s]*)?)/);
+
+      if (emailMatch) {
+        email = emailMatch[1];
+      }
+      if (phoneMatch) {
+        phone = phoneMatch[1].trim();
+      }
+      if (websiteMatch) {
+        website = websiteMatch[1];
+        if (!website.startsWith('http')) {
+          website = website.startsWith('www.') ? `https://${website}` : `https://www.${website}`;
+        }
+      }
+    }
+
+    fields.push({ label: "Email", value: email, type: "text" as const });
+    fields.push({ label: "Phone", value: phone, type: "text" as const });
+    fields.push({ label: "Website", value: website, type: "text" as const });
+  } else {
+    // Add default contact information if none provided
+    fields.push({ label: "Email", value: "contact@example.com", type: "text" as const });
+    fields.push({ label: "Phone", value: "+1-555-0123", type: "text" as const });
+    fields.push({ label: "Website", value: "www.example.com", type: "text" as const });
   }
 
   return {

@@ -43,7 +43,6 @@ interface UserType {
 export default function Chat() {
   const router = useRouter()
   const [user, setUser] = useState<UserType | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
   const [currentMessage, setCurrentMessage] = useState("")
   const [messages, setMessages] = useState<Message[]>([])
   const [chats, setChats] = useState<Chat[]>([])
@@ -117,9 +116,9 @@ export default function Chat() {
       setIsAssistantTyping(false);
       
       // Transform API response to match our internal format
-      const transformedSuppliers: Supplier[] = apiData.suppliers?.map((supplier, index) => 
-        transformSupplierData(supplier, index)
-      ) || [];
+      const transformedSuppliers: Supplier[] = apiData.suppliers?.map((supplier, index) => {
+        return transformSupplierData(supplier, index);
+      }) || [];
 
       const assistantMessage = {
         id: `${activeChat}_${Date.now()}_a`,
@@ -241,6 +240,39 @@ export default function Chat() {
     }
   }
 
+  const handleDeleteChat = async (chatId: string) => {
+    if (!user) return;
+    
+    // Remove chat from local state
+    setChats((prev) => prev.filter((chat) => chat.id !== chatId));
+    
+    // If the deleted chat was active, switch to another chat or clear messages
+    if (activeChat === chatId) {
+      const remainingChats = chats.filter((chat) => chat.id !== chatId);
+      if (remainingChats.length > 0) {
+        setActiveChat(remainingChats[0].id);
+        setMessages(remainingChats[0].messages);
+      } else {
+        setActiveChat(null);
+        setMessages([]);
+      }
+    }
+    
+    // Delete from database
+    try {
+      await fetch('/api/chats', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: user.uid,
+          chat_id: chatId,
+        }),
+      });
+    } catch (error) {
+      console.error('Error deleting chat:', error);
+    }
+  }
+
   const handleChatSelect = (chatId: string) => {
     setActiveChat(chatId)
   }
@@ -257,7 +289,6 @@ export default function Chat() {
       } else {
         router.push("/login")
       }
-      setIsLoading(false)
     })
     return () => unsubscribe()
   }, [router])
@@ -312,14 +343,6 @@ export default function Chat() {
     setMessages(chat ? chat.messages : [])
   }, [activeChat, chats])
 
-  // Show loading while checking authentication
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-zinc-950 animate-pulse">
-      </div>
-    )
-  }
-
   // Only render chat if user is authenticated
   if (!user) {
     return null
@@ -348,6 +371,7 @@ export default function Chat() {
       onRenameSave={handleRenameSave}
       onRenameKeyDown={handleRenameKeyDown}
       setRenamingChatId={setRenamingChatId}
+      onDeleteChat={handleDeleteChat}
     />
   )
 }

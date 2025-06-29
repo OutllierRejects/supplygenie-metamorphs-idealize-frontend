@@ -138,3 +138,33 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: 'Failed to update chat name', details: e instanceof Error ? e.message : String(e) }, { status: 500 });
   }
 }
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const { user_id, chat_id } = body;
+    
+    if (!user_id || !chat_id) {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+    
+    const client = await clientPromise;
+    const db = client.db('userchats');
+    
+    // Remove the chat from the user's chat_history
+    const result = await db.collection<UserChats>('chats').findOneAndUpdate(
+      { user_id },
+      { $pull: { chat_history: { chat_id } } },
+      { returnDocument: 'after' }
+    );
+    
+    if (!result) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+    
+    return NextResponse.json({ success: true, message: 'Chat deleted successfully' });
+  } catch (e) {
+    console.error("DELETE /api/chats error:", e);
+    return NextResponse.json({ error: 'Failed to delete chat', details: e instanceof Error ? e.message : String(e) }, { status: 500 });
+  }
+}
