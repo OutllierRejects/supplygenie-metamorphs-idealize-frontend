@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { onAuthStateChanged, signOut } from "firebase/auth"
 import { auth } from "@/lib/firebase"
-import LandingPage from "@/components/landing-page"
+import HomePage from "@/components/home-page"
 
 interface UserType {
   name: string
@@ -18,7 +18,7 @@ export default function Home() {
   const [user, setUser] = useState<UserType | null>(null)
   const [isAnimating, setIsAnimating] = useState(false)
 
-  const handleViewChange = (newView: "landing" | "login" | "signup" | "chat") => {
+  const handleViewChange = (newView: "home" | "login" | "signup" | "chat") => {
     setIsAnimating(true)
     setTimeout(() => {
       if (newView === "login") router.push("/login")
@@ -49,7 +49,7 @@ export default function Home() {
   }, [])
 
   return (
-    <LandingPage
+    <HomePage
       user={user}
       onViewChange={handleViewChange}
       onLogout={handleLogout}

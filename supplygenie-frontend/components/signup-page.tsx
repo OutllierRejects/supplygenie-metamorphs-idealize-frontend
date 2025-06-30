@@ -22,7 +22,7 @@ interface SignupPageProps {
   onEmailChange: (email: string) => void
   onPasswordChange: (password: string) => void
   onSignup: () => void
-  onViewChange: (view: "landing" | "login" | "signup" | "chat") => void
+  onViewChange: (view: "home" | "login" | "signup" | "chat") => void
 }
 
 // Reusable style constants
@@ -131,7 +131,7 @@ export default function SignupPage({
                     Sign in
                   </button>
                 </p>
-                <button onClick={() => onViewChange("landing")} className="text-sm text-zinc-500 hover:text-zinc-400">
+                <button onClick={() => onViewChange("home")} className="text-sm text-zinc-500 hover:text-zinc-400">
                   ← Back to home
                 </button>
               </div>

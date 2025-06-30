@@ -25,9 +25,9 @@ interface UserType {
   uid: string
 }
 
-interface LandingPageProps {
+interface HomePageProps {
   user: UserType | null
-  onViewChange: (view: "landing" | "login" | "signup" | "chat") => void
+  onViewChange: (view: "home" | "login" | "signup" | "chat") => void
   onLogout: () => void
   isAnimating: boolean
 }
@@ -85,7 +85,7 @@ const features = [
   },
 ]
 
-export default function LandingPage({ user, onViewChange, onLogout, isAnimating }: LandingPageProps) {
+export default function HomePage({ user, onViewChange, onLogout, isAnimating }: HomePageProps) {
   return (
     <div
       className={`min-h-screen bg-zinc-950 text-white transition-opacity duration-300 ${

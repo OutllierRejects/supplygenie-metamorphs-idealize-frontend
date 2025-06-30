@@ -23,10 +23,10 @@ export default function Login() {
     }
   }
 
-  const handleViewChange = (newView: "landing" | "login" | "signup" | "chat") => {
+  const handleViewChange = (newView: "home" | "login" | "signup" | "chat") => {
     setIsAnimating(true)
     setTimeout(() => {
-      if (newView === "landing") router.push("/")
+      if (newView === "home") router.push("/")
       if (newView === "signup") router.push("/signup")
       if (newView === "chat") router.push("/chat")
       setIsAnimating(false)

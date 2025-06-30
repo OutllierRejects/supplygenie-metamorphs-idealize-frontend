@@ -74,7 +74,7 @@ interface ChatPageProps {
   isAssistantTyping: boolean
   renamingChatId: string | null
   renameValue: string
-  onViewChange: (view: "landing" | "login" | "signup" | "chat") => void
+  onViewChange: (view: "home" | "login" | "signup" | "chat") => void
   onLogout: () => void
   onChatSelect: (chatId: string) => void
   onCreateNewChat: () => void
@@ -208,7 +208,7 @@ const ContactButton = ({ type, value }: ContactButtonProps) => {
     <Button 
       size="sm" 
       variant="ghost" 
-      className="p-2 h-8 w-8 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 text-cyan-400 hover:text-white hover:from-cyan-500/30 hover:to-blue-500/30 hover:border-cyan-400/50 transition-all duration-200 rounded-lg backdrop-blur-sm"
+      className="p-2 h-8 w-8 bg-secondary border border-border text-accent-foreground hover:text-primary-foreground hover:bg-accent hover:border-accent transition-all duration-200 rounded-lg"
       onClick={handleClick}
       title={getTitle()}
     >
@@ -224,7 +224,7 @@ const renderFieldValue = (field: SupplierField) => {
   switch (field.type) {
     case "badge":
       if (safeValue === "N/A") {
-        return <span className="text-xs md:text-sm text-zinc-400">N/A</span>
+        return <span className="text-xs md:text-sm text-muted-foreground">N/A</span>
       }
       return (
         <div className="flex flex-wrap gap-1">
@@ -232,7 +232,7 @@ const renderFieldValue = (field: SupplierField) => {
             <Badge 
               key={index} 
               variant="secondary" 
-              className="text-xs bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 text-blue-300 hover:from-blue-500/30 hover:to-purple-500/30 transition-all duration-200 px-1.5 md:px-2 py-0.5 md:py-1 break-words"
+              className="text-xs bg-secondary border border-border text-secondary-foreground hover:bg-accent hover:text-accent-foreground transition-all duration-200 px-1.5 md:px-2 py-0.5 md:py-1 break-words"
             >
               {item.trim()}
             </Badge>
@@ -241,32 +241,32 @@ const renderFieldValue = (field: SupplierField) => {
       )
     case "rating":
       if (safeValue === "N/A") {
-        return <span className="text-xs md:text-sm text-zinc-400">N/A</span>
+        return <span className="text-xs md:text-sm text-muted-foreground">N/A</span>
       }
       return (
         <div className="flex items-center space-x-1">
           <Star className="w-3 h-3 fill-yellow-500 text-yellow-500 flex-shrink-0" />
-          <span className="text-xs md:text-sm font-medium">{safeValue}</span>
+          <span className="text-xs md:text-sm font-medium text-foreground">{safeValue}</span>
         </div>
       )
     case "location":
       return (
         <div className="flex items-center space-x-1 min-w-0">
-          <MapPin className="w-3 h-3 text-zinc-400 flex-shrink-0" />
-          <span className="text-xs md:text-sm truncate">{safeValue}</span>
+          <MapPin className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+          <span className="text-xs md:text-sm truncate text-card-foreground">{safeValue}</span>
         </div>
       )
     case "time":
       return (
         <div className="flex items-center space-x-1 min-w-0">
-          <Clock className="w-3 h-3 text-zinc-400 flex-shrink-0" />
-          <span className="text-xs md:text-sm truncate">{safeValue}</span>
+          <Clock className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+          <span className="text-xs md:text-sm truncate text-card-foreground">{safeValue}</span>
         </div>
       )
     case "price":
-      return <span className="text-xs md:text-sm font-medium text-green-400 break-words">{safeValue}</span>
+      return <span className="text-xs md:text-sm font-medium text-green-500 break-words">{safeValue}</span>
     default:
-      return <span className="text-xs md:text-sm break-words">{safeValue}</span>
+      return <span className="text-xs md:text-sm break-words text-card-foreground">{safeValue}</span>
   }
 }
 
@@ -493,7 +493,7 @@ export default function ChatPage({
             </Button>
           )}
           <button
-            onClick={() => onViewChange('landing')}
+            onClick={() => onViewChange('home')}
             className="focus:outline-none"
             aria-label="Go to home page"
             type="button"
@@ -768,17 +768,17 @@ export default function ChatPage({
                       {message.suppliers && message.suppliers.length > 0 && (
                         <div className="mt-4 w-full max-w-full">
                           {/* Header */}
-                          <div className="bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-cyan-500/10 border border-blue-500/20 rounded-xl p-3 md:p-4 mb-4 md:mb-6 backdrop-blur-sm">
+                          <div className="bg-card border border-border rounded-xl p-3 md:p-4 mb-4 md:mb-6">
                             <div className="flex items-center gap-2 md:gap-3">
-                              <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg flex-shrink-0">
-                                <Building className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                              <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-primary flex items-center justify-center shadow-lg flex-shrink-0">
+                                <Building className="w-4 h-4 md:w-5 md:h-5 text-primary-foreground" />
                               </div>
                               <div className="min-w-0 flex-1">
-                                <h3 className="text-lg md:text-xl lg:text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent leading-tight">
+                                <h3 className="text-lg md:text-xl lg:text-2xl font-bold text-foreground leading-tight">
                                   Top Supplier Matches
                                 </h3>
-                                <p className="text-xs md:text-sm text-zinc-400 mt-1">
-                                  Found <span className="font-semibold text-blue-400">{message.suppliers.length}</span> suppliers matching your criteria
+                                <p className="text-xs md:text-sm text-muted-foreground mt-1">
+                                  Found <span className="font-semibold text-foreground">{message.suppliers.length}</span> suppliers matching your criteria
                                 </p>
                               </div>
                             </div>
@@ -789,20 +789,20 @@ export default function ChatPage({
                             {message.suppliers.map((supplier) => (
                               <Card
                                 key={supplier.id}
-                                className="group bg-gradient-to-br from-zinc-900 via-zinc-900 to-zinc-800 border border-zinc-700/50 hover:border-blue-500/30 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-1 backdrop-blur-sm flex flex-col h-full"
+                                className="group bg-card border border-border hover:border-accent transition-all duration-300 hover:shadow-lg hover:-translate-y-1 flex flex-col h-full"
                               >
                                 <CardHeader className="pb-2 md:pb-3 relative flex-shrink-0">
                                   {/* Background gradient accent */}
-                                  <div className="absolute top-0 right-0 w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-blue-500/10 to-transparent rounded-bl-3xl" />
+                                  <div className="absolute top-0 right-0 w-16 h-16 md:w-20 md:h-20 bg-accent/10 rounded-bl-3xl" />
                                   
                                   <div className="flex items-start justify-between relative z-10 gap-2">
                                     <div className="flex-1 min-w-0 space-y-1 md:space-y-2">
                                       <div className="flex items-start gap-2">
-                                        <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-lg">
-                                          <Building className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                                        <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-primary flex items-center justify-center flex-shrink-0 shadow-lg">
+                                          <Building className="w-4 h-4 md:w-5 md:h-5 text-primary-foreground" />
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                          <CardTitle className="text-sm md:text-base lg:text-lg font-bold text-white mb-1 leading-tight group-hover:text-blue-100 transition-colors overflow-hidden"
+                                          <CardTitle className="text-sm md:text-base lg:text-lg font-bold text-card-foreground mb-1 leading-tight group-hover:text-foreground transition-colors overflow-hidden"
                                             style={{
                                               display: '-webkit-box',
                                               WebkitLineClamp: 2,
@@ -813,8 +813,8 @@ export default function ChatPage({
                                             {supplier.name}
                                           </CardTitle>
                                           {supplier.fields.find((f: SupplierField) => f.label === "Location") && (
-                                            <div className="flex items-center gap-1 text-xs md:text-sm text-zinc-400">
-                                              <MapPin className="w-3 h-3 md:w-3.5 md:h-3.5 text-blue-400 flex-shrink-0" />
+                                            <div className="flex items-center gap-1 text-xs md:text-sm text-muted-foreground">
+                                              <MapPin className="w-3 h-3 md:w-3.5 md:h-3.5 text-accent-foreground flex-shrink-0" />
                                               <span className="truncate text-xs md:text-sm">{supplier.fields.find((f: SupplierField) => f.label === "Location")?.value}</span>
                                             </div>
                                           )}
@@ -822,9 +822,9 @@ export default function ChatPage({
                                       </div>
                                     </div>
                                     {supplier.fields.find((f: SupplierField) => f.label === "Rating") && (
-                                      <div className="flex items-center gap-1 md:gap-1.5 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 px-2 md:px-3 py-1 md:py-1.5 rounded-full backdrop-blur-sm flex-shrink-0">
+                                      <div className="flex items-center gap-1 md:gap-1.5 bg-secondary border border-border px-2 md:px-3 py-1 md:py-1.5 rounded-full flex-shrink-0">
                                         <Star className="w-3 h-3 md:w-3.5 md:h-3.5 fill-yellow-400 text-yellow-400" />
-                                        <span className="text-xs md:text-sm font-semibold text-yellow-300">
+                                        <span className="text-xs md:text-sm font-semibold text-secondary-foreground">
                                           {supplier.fields.find((f: SupplierField) => f.label === "Rating")?.value}
                                         </span>
                                       </div>
@@ -836,12 +836,12 @@ export default function ChatPage({
                                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-3">
                                     {/* Price Range */}
                                     {supplier.fields.find((f: SupplierField) => f.label === "Price Range") && (
-                                      <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-lg p-2 md:p-3 space-y-1 min-w-0">
-                                        <div className="flex items-center gap-1 md:gap-1.5 text-green-400">
-                                          <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-green-400 flex-shrink-0" />
+                                      <div className="bg-secondary/50 border border-border rounded-lg p-2 md:p-3 space-y-1 min-w-0">
+                                        <div className="flex items-center gap-1 md:gap-1.5 text-accent-foreground">
+                                          <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-accent-foreground flex-shrink-0" />
                                           <span className="text-xs font-medium uppercase tracking-wide">Price Range</span>
                                         </div>
-                                        <p className="text-xs md:text-sm font-semibold text-green-300 break-words">
+                                        <p className="text-xs md:text-sm font-semibold text-green-500 break-words">
                                           {supplier.fields.find((f: SupplierField) => f.label === "Price Range")?.value}
                                         </p>
                                       </div>
@@ -849,12 +849,12 @@ export default function ChatPage({
                                     
                                     {/* MOQ */}
                                     {supplier.fields.find((f: SupplierField) => f.label === "MOQ") && (
-                                      <div className="bg-gradient-to-br from-purple-500/10 to-indigo-500/10 border border-purple-500/20 rounded-lg p-2 md:p-3 space-y-1 min-w-0">
-                                        <div className="flex items-center gap-1 md:gap-1.5 text-purple-400">
-                                          <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-purple-400 flex-shrink-0" />
+                                      <div className="bg-secondary/50 border border-border rounded-lg p-2 md:p-3 space-y-1 min-w-0">
+                                        <div className="flex items-center gap-1 md:gap-1.5 text-accent-foreground">
+                                          <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-accent-foreground flex-shrink-0" />
                                           <span className="text-xs font-medium uppercase tracking-wide">MOQ</span>
                                         </div>
-                                        <p className="text-xs md:text-sm font-semibold text-purple-300 break-words">
+                                        <p className="text-xs md:text-sm font-semibold text-foreground break-words">
                                           {supplier.fields.find((f: SupplierField) => f.label === "MOQ")?.value}
                                         </p>
                                       </div>
@@ -865,12 +865,12 @@ export default function ChatPage({
                                   <div className="space-y-2 md:space-y-3">
                                     {/* Lead Time */}
                                     {supplier.fields.find((f: SupplierField) => f.label === "Lead Time") && (
-                                      <div className="flex items-center justify-between p-2 rounded-lg bg-zinc-800/50 border border-zinc-700/50 gap-2 min-w-0">
-                                        <div className="flex items-center gap-1 md:gap-2 text-zinc-400 min-w-0">
-                                          <Clock className="w-3 h-3 md:w-4 md:h-4 text-blue-400 flex-shrink-0" />
+                                      <div className="flex items-center justify-between p-2 rounded-lg bg-muted border border-border gap-2 min-w-0">
+                                        <div className="flex items-center gap-1 md:gap-2 text-muted-foreground min-w-0">
+                                          <Clock className="w-3 h-3 md:w-4 md:h-4 text-accent-foreground flex-shrink-0" />
                                           <span className="text-xs md:text-sm font-medium truncate">Lead Time</span>
                                         </div>
-                                        <span className="text-xs md:text-sm font-semibold text-blue-300 flex-shrink-0">
+                                        <span className="text-xs md:text-sm font-semibold text-foreground flex-shrink-0">
                                           {supplier.fields.find((f: SupplierField) => f.label === "Lead Time")?.value}
                                         </span>
                                       </div>
@@ -878,12 +878,12 @@ export default function ChatPage({
                                     
                                     {/* Response Time */}
                                     {supplier.fields.find((f: SupplierField) => f.label === "Response Time") && (
-                                      <div className="flex items-center justify-between p-2 rounded-lg bg-zinc-800/50 border border-zinc-700/50 gap-2 min-w-0">
-                                        <div className="flex items-center gap-1 md:gap-2 text-zinc-400 min-w-0">
-                                          <Clock className="w-3 h-3 md:w-4 md:h-4 text-cyan-400 flex-shrink-0" />
+                                      <div className="flex items-center justify-between p-2 rounded-lg bg-muted border border-border gap-2 min-w-0">
+                                        <div className="flex items-center gap-1 md:gap-2 text-muted-foreground min-w-0">
+                                          <Clock className="w-3 h-3 md:w-4 md:h-4 text-accent-foreground flex-shrink-0" />
                                           <span className="text-xs md:text-sm font-medium truncate">Response Time</span>
                                         </div>
-                                        <span className="text-xs md:text-sm font-semibold text-cyan-300 flex-shrink-0">
+                                        <span className="text-xs md:text-sm font-semibold text-foreground flex-shrink-0">
                                           {supplier.fields.find((f: SupplierField) => f.label === "Response Time")?.value}
                                         </span>
                                       </div>
@@ -895,9 +895,9 @@ export default function ChatPage({
                                     {/* Stock */}
                                     {supplier.fields.find((f: SupplierField) => f.label === "Stock") && 
                                      supplier.fields.find((f: SupplierField) => f.label === "Stock")?.value !== "N/A" && (
-                                      <div className="flex items-center justify-between p-2 rounded-lg bg-zinc-800/30 gap-2 min-w-0">
-                                        <span className="text-xs md:text-sm text-zinc-400 truncate">Stock Level</span>
-                                        <span className="text-xs md:text-sm font-medium text-zinc-200 flex-shrink-0">
+                                      <div className="flex items-center justify-between p-2 rounded-lg bg-secondary/30 gap-2 min-w-0">
+                                        <span className="text-xs md:text-sm text-muted-foreground truncate">Stock Level</span>
+                                        <span className="text-xs md:text-sm font-medium text-card-foreground flex-shrink-0">
                                           {supplier.fields.find((f: SupplierField) => f.label === "Stock")?.value}
                                         </span>
                                       </div>
@@ -906,9 +906,9 @@ export default function ChatPage({
                                     {/* Time Zone */}
                                     {supplier.fields.find((f: SupplierField) => f.label === "Time Zone") && 
                                      supplier.fields.find((f: SupplierField) => f.label === "Time Zone")?.value !== "N/A" && (
-                                      <div className="flex items-center justify-between p-2 rounded-lg bg-zinc-800/30 gap-2 min-w-0">
-                                        <span className="text-xs md:text-sm text-zinc-400 truncate">Time Zone</span>
-                                        <span className="text-xs md:text-sm font-medium text-zinc-200 flex-shrink-0">
+                                      <div className="flex items-center justify-between p-2 rounded-lg bg-secondary/30 gap-2 min-w-0">
+                                        <span className="text-xs md:text-sm text-muted-foreground truncate">Time Zone</span>
+                                        <span className="text-xs md:text-sm font-medium text-card-foreground flex-shrink-0">
                                           {supplier.fields.find((f: SupplierField) => f.label === "Time Zone")?.value}
                                         </span>
                                       </div>
@@ -922,8 +922,8 @@ export default function ChatPage({
                                      supplier.fields.find((f: SupplierField) => f.label === "Certifications")?.value !== "N/A" && (
                                       <div className="space-y-1 md:space-y-2">
                                         <div className="flex items-center gap-1 md:gap-2">
-                                          <div className="w-1 h-1 md:w-1.5 md:h-1.5 rounded-full bg-blue-400 flex-shrink-0" />
-                                          <span className="text-xs md:text-sm font-medium text-blue-400">Certifications</span>
+                                          <div className="w-1 h-1 md:w-1.5 md:h-1.5 rounded-full bg-accent-foreground flex-shrink-0" />
+                                          <span className="text-xs md:text-sm font-medium text-accent-foreground">Certifications</span>
                                         </div>
                                         <div className="pl-2 md:pl-3">
                                           {renderFieldValue(supplier.fields.find((f: SupplierField) => f.label === "Certifications")!)}
@@ -936,8 +936,8 @@ export default function ChatPage({
                                      supplier.fields.find((f: SupplierField) => f.label === "Specialties")?.value !== "N/A" && (
                                       <div className="space-y-1 md:space-y-2">
                                         <div className="flex items-center gap-1 md:gap-2">
-                                          <div className="w-1 h-1 md:w-1.5 md:h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />
-                                          <span className="text-xs md:text-sm font-medium text-emerald-400">Specialties</span>
+                                          <div className="w-1 h-1 md:w-1.5 md:h-1.5 rounded-full bg-accent-foreground flex-shrink-0" />
+                                          <span className="text-xs md:text-sm font-medium text-accent-foreground">Specialties</span>
                                         </div>
                                         <div className="pl-2 md:pl-3">
                                           {renderFieldValue(supplier.fields.find((f: SupplierField) => f.label === "Specialties")!)}
@@ -951,12 +951,12 @@ export default function ChatPage({
                                     {supplier.fields
                                       .filter((f: SupplierField) => !["Location", "Rating", "Price Range", "Lead Time", "Response Time", "MOQ", "Stock", "Time Zone", "Certifications", "Specialties", "Email", "Phone", "Website"].includes(f.label))
                                       .length > 0 && (
-                                      <div className="space-y-2 pt-2 border-t border-zinc-800/50">
+                                      <div className="space-y-2 pt-2 border-t border-border">
                                         {supplier.fields
                                           .filter((f: SupplierField) => !["Location", "Rating", "Price Range", "Lead Time", "Response Time", "MOQ", "Stock", "Time Zone", "Certifications", "Specialties", "Email", "Phone", "Website"].includes(f.label))
                                           .map((field: SupplierField, index: number) => (
-                                            <div key={index} className="flex items-center justify-between p-2 rounded-lg bg-zinc-800/30 gap-2 min-w-0">
-                                              <span className="text-xs md:text-sm text-zinc-400 truncate">{field.label}</span>
+                                            <div key={index} className="flex items-center justify-between p-2 rounded-lg bg-secondary/30 gap-2 min-w-0">
+                                              <span className="text-xs md:text-sm text-muted-foreground truncate">{field.label}</span>
                                               <div className="text-right flex-shrink-0">
                                                 {renderFieldValue(field)}
                                               </div>
@@ -968,11 +968,11 @@ export default function ChatPage({
                                   
                                   {/* Contact Information - Always at the bottom */}
                                   {supplier.fields.find((f: SupplierField) => f.label === "Website") && (
-                                    <div className="pt-3 md:pt-4 mt-auto border-t border-zinc-700/50">
+                                    <div className="pt-3 md:pt-4 mt-auto border-t border-border">
                                       <div className="flex items-center justify-between gap-2">
                                         <div className="flex items-center gap-1 md:gap-2 min-w-0">
-                                          <Globe className="w-3 h-3 md:w-4 md:h-4 text-cyan-400 flex-shrink-0" />
-                                          <span className="text-xs md:text-sm font-medium text-cyan-400">Contact</span>
+                                          <Globe className="w-3 h-3 md:w-4 md:h-4 text-accent-foreground flex-shrink-0" />
+                                          <span className="text-xs md:text-sm font-medium text-accent-foreground">Contact</span>
                                         </div>
                                         <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
                                           {supplier.fields

@@ -57,8 +57,8 @@ export default function Chat() {
     router.push("/")
   }
 
-  const handleViewChange = (newView: "landing" | "login" | "signup" | "chat") => {
-    if (newView === "landing") router.push("/")
+  const handleViewChange = (newView: "home" | "login" | "signup" | "chat") => {
+    if (newView === "home") router.push("/")
     if (newView === "login") router.push("/login")
     if (newView === "signup") router.push("/signup")
   }
